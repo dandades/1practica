@@ -1,15 +1,23 @@
 #!/bin/bash
 
+# PRÀCTICA 1: TRACTAMENT DE DADES AMB SHELL SCRIPT
+# GRUP 1, PLAB 811
+
+# Per 
+
 # Pas 5
+
 if [ -n "$1" ]; then
 
 	search=$1
 
 	if [ -f "sortida.csv" ]; then
 
-		if grep -i "$search" sortida.csv > /dev/null; then
+		cerca=`grep -i "$search" sortida.csv`
+
+		if echo "$cerca" > /dev/null; then
 	    		echo "Resultats de la cerca per a '$search':"
-	        	grep -i "$search" sortida.csv | cut -d',' -f1,2,6,7,8,17,18,19
+	        	echo "$cerca" | cut -d',' -f1,2,6,7,8,17,18,19
 		else
 	      		echo "No s'han trobat coincidències per a '$search'."
 		fi
@@ -21,11 +29,20 @@ if [ -n "$1" ]; then
 	exit 0
 fi
 
-# Pas 1:
+# Pas 1: Eliminar columnes description i thumbnail_link
+
+# Amb cut seleccionem les columnes que són d'interès i les afegim a un nou arxiu temporal temp.csv.
+# D'aquesta manera esborrem les columnes que no ens interessen
+
 cut -d',' -f1-11,13-15 supervivents.csv > temp.csv
 
-# Pas 2:
+
+# Pas 2: Eliminar registres que corresponen al valor True en la columna video_error_or_removed utilitzant awk
+
+# Definim la separació de camps amb -F',', i els registres on la columna triada no és True els copiem a un nou arxiu temp2.csv
 awk -F',' '$14!="True"' temp.csv > temp2.csv
+
+#
 a=$(expr $(wc -l < temp.csv) - $(wc -l < temp2.csv))
 echo "S'han eliminat $a registres"
 
