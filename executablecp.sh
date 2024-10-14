@@ -1,28 +1,35 @@
 #!/bin/bash
 
-# Pas 5:
+# Pas 5
 if [ -n "$1" ]; then
-    search=$1
-    # Cerca el terme de cerca al fitxer sortida.csv
-    if grep -i "$search" sortida.csv > /dev/null; then
-        echo "Resultats de la cerca per a '$search':"
-        grep -i "$search" sortida.csv | cut -d',' -f1,2,6,7,8,17,18,19
-    else
-        echo "No s'han trobat coincidències per a '$search'."
-    fi
-    exit 0
+
+	search=$1
+
+	if [ -f "sortida.csv" ]; then
+
+		if grep -i "$search" sortida.csv > /dev/null; then
+	    		echo "Resultats de la cerca per a '$search':"
+	        	grep -i "$search" sortida.csv | cut -d',' -f1,2,6,7,8,17,18,19
+		else
+	      		echo "No s'han trobat coincidències per a '$search'."
+		fi
+		exit 0
+
+	else
+		echo "No existeix l'arxiu sortida.csv"
+	fi
+	exit 0
 fi
 
-
-# Pas 1: Extraer columnas seleccionadas del archivo CSV inicial
+# Pas 1:
 cut -d',' -f1-11,13-15 supervivents.csv > temp.csv
 
-# Pas 2: Filtrar registros con la columna 11 igual a "True"
+# Pas 2:
 awk -F',' '$14!="True"' temp.csv > temp2.csv
 a=$(expr $(wc -l < temp.csv) - $(wc -l < temp2.csv))
 echo "S'han eliminat $a registres"
 
-# Pas 3: Clasificar según el número de visualitzacions
+# Pas 3:
 awk -F',' 'NR==1 {
     print $0 ",Ranking_views";
     next
@@ -34,7 +41,7 @@ awk -F',' 'NR==1 {
     print $0 "," Ranking_views
 }' temp2.csv > temp3.csv
 
-# Pas 4: Càlcul del percentatge de likes i dislikes
+# Pas 4:
 encap=true
 
 while read -r line; do
