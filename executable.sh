@@ -5,7 +5,8 @@
 
 # Per 
 
-# Pas 5
+# ------------------------------------------------------------------------------------------------------------------------------
+# Pas 5:
 
 if [ -n "$1" ]; then
 
@@ -29,6 +30,7 @@ if [ -n "$1" ]; then
 	exit 0
 fi
 
+# ------------------------------------------------------------------------------------------------------------------------------
 # Pas 1: Eliminar columnes description i thumbnail_link
 
 # Amb cut seleccionem les columnes que són d'interès i les afegim a un nou arxiu temporal temp.csv.
@@ -36,28 +38,37 @@ fi
 
 cut -d',' -f1-11,13-15 supervivents.csv > temp.csv
 
-
+# ------------------------------------------------------------------------------------------------------------------------------
 # Pas 2: Eliminar registres que corresponen al valor True en la columna video_error_or_removed utilitzant awk
 
 # Definim la separació de camps amb -F',', i els registres on la columna triada no és True els copiem a un nou arxiu temp2.csv
 awk -F',' '$14!="True"' temp.csv > temp2.csv
 
-#
+# Definim una nova variable a que recull l'expressió de la diferència entre el nombre de registres de l arxiu anterior (temp.csv) i el de nova creació (temp2.csv)
 a=$(expr $(wc -l < temp.csv) - $(wc -l < temp2.csv))
+
+# Imprimim la variable a amb un missatge de notificació.
 echo "S'han eliminat $a registres"
 
-# Pas 3:
+# ------------------------------------------------------------------------------------------------------------------------------
+# Pas 3: Creem una nova columna Ranking_views i definim el valors per a cada registre segons les visualitzacions que corresponen. Tot en awk
+
+# Definim la separació de camps per , i pel primer registre (NR==1) imprimim l'encapçalament ,Ranking_views.
 awk -F',' 'NR==1 {
     print $0 ",Ranking_views";
     next
 }
 {
+# Establim una estructura condicional if d'awk que pren el valor de les visualitzacions ($8) i les classifica per tres calaixos.
     if ($8 >= 1000000) Ranking_views="Estrella";
     else if ($8 >= 100000) Ranking_views="Excel.lent";
     else Ranking_views="Bo";
+# Imprimim cada registre i li afegim el valor de Ranking_views establert en el pas anterior, acompanyat d'una coma per separació de camps.
     print $0 "," Ranking_views
+# Tanquem les accions d'awk i establim l arxiu d entrada (temp2.csv) i el de sortida (temp3.csv, de nova creació) 
 }' temp2.csv > temp3.csv
 
+# ------------------------------------------------------------------------------------------------------------------------------
 # Pas 4:
 encap=true
 
