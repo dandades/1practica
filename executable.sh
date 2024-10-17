@@ -26,8 +26,8 @@ if [ -n "$1" ]; then
 		cerca=`grep -i "$search" sortida.csv`
 
 		# Estructura condicional: Si $cerca_espec no és buida, és a dir, s'han trobat coincidències per $search en títol o identificador per sortida.csv, retorna true; si no, retorna fals.
-		# /dev/null correspon a una paperera, si rep contingut, retorna true; alternativament, retorna fals.
-		if echo "$cerca_espec" > /dev/null; then
+		# Si la condició es compleix, s'executarà la mostra de resultats. Si no ho és, és mostrarà el missatge corresponent.
+		if [ -n "$cerca_espec" ]; then
 
 			# Imprimeix missatge informatiu pel cas positiu de cerca.
 	    		echo "Resultats de la cerca per a '$search':"
